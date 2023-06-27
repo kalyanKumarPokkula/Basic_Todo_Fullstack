@@ -1,0 +1,254 @@
+<html>
+<head>
+    <title>
+        TODO app
+    </title>
+</head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Belanosima:wght@600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<style>
+    *{
+        box-sizing: border-box;
+        font-family: 'Belanosima', sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 16px;
+    }
+   
+    body{
+        background-color: hwb(210 97% 1%);
+        width: 100%;
+        min-height: 100%;
+        /* display: flex;
+        justify-content: center;
+        align-items: center; */
+       
+            
+            
+
+    }
+    .nav{
+       padding: 16px 34px 16px 44px;
+       box-shadow: 0 3px 10px rgb(0 0 0 /0.2);
+    }
+   
+    .search{
+        display: flex;
+        flex-direction: row;
+    }
+
+    h2{
+        padding-bottom: 12px;
+        font-weight: bold;
+        color: #114b45;
+    }
+    #container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+
+    }
+    .form-container{
+        background-color: white;
+        width: 500px;
+        /* height: 250px; */
+        border-radius: 16px;
+        box-shadow: 0 3px 10px rgb(0 0 0 /0.2);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input[type='text']{
+        width: 300px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border: 1px solid
+         #ccc;
+    }
+    button{
+        padding : 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4;
+        cursor: pointer;
+    }
+
+    #mainArea{
+        background-color: white;
+        width: 1000px;
+        /* height: 250px; */
+        border-radius: 16px;
+        box-shadow: 0 3px 10px rgb(0 0 0 /0.2);
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        
+        /* text-align: center; */
+
+    }
+    .todo{
+        flex: 0 1 45%;
+        background-color: #f5f5f5;
+        max-width: 400px;
+        /* height: 250px; */
+        border-radius: 16px;
+        box-shadow: 0 3px 10px rgb(0 0 0 /0.2);
+        padding: 20px;
+        /* text-align: center; */
+    }
+    .title{
+        margin-bottom: 10px;
+    }
+    .description{
+        margin-bottom: 10px;
+    }
+    .todo div label{
+        padding-bottom: 12px;
+        font-size: 1.3rem;
+        font-weight: bolder;
+        color: #114b45;
+    }
+    span{
+        /* display: block; */
+        font-size: 1.1rem;
+        padding-left: 8px;
+    }
+</style>
+<script>
+    async function onPress(e) {
+        e.preventDefault();
+        let title = document.getElementById('title');
+        let description = document.getElementById('description');
+        let response = await fetch("http://localhost:3000/todos", {
+            method: "POST",
+            body: JSON.stringify({
+                title: title.value,
+                description: description.value
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        let data = await response.json();
+        title.value = '';
+        description.value = '';
+        renderPostData(data , mainArea);
+    }
+    // function onPress(e){
+    //     console.log(e);
+    // }
+
+    function renderPostData(data , mainArea){
+        let div = document.createElement('div');
+        div.className = 'todo';
+        let titleDiv = document.createElement('div');
+        titleDiv.className = 'title'
+        let titleLabel = document.createElement('label');
+        titleLabel.innerText = 'Title :'
+        let title = document.createElement('span');
+        title.innerText = data.title
+        titleDiv.appendChild(titleLabel);
+        titleDiv.appendChild(title);
+        let descriptionDiv = document.createElement('div');
+        descriptionDiv.className = 'description'
+        let descriptionLabel =document.createElement('label');
+        descriptionLabel.innerText = 'Description :' 
+        let description = document.createElement('span');
+        description.innerText = data.description
+
+        descriptionDiv.appendChild(descriptionLabel);
+        descriptionDiv.appendChild(description);
+        let button = document.createElement('button');
+        button.innerText = "delete"
+        button.addEventListener('click' , function(){
+            console.log("deleted" , typeof data.id);
+            deleteData(data.id);
+        })
+
+        div.appendChild(titleDiv)
+        div.appendChild(descriptionDiv);
+        div.appendChild(button);
+        mainArea.appendChild(div);
+    }
+
+    async function deleteData(id){
+        console.log(typeof id);
+        let response = await fetch(`http://localhost:3000/todos/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        let data = await response.json();
+        console.log(data);
+        let mainArea = document.getElementById('mainArea');
+        mainArea.innerHTML = ''
+        getData();
+    }
+
+  
+
+    async function getData(){
+        let response = await fetch("http://localhost:3000/todos", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        let data = await response.json()
+        console.log(data.length);
+        console.log(data);
+        let mainArea = document.getElementById('mainArea');
+        for(var i=0;i<data.length;i++){
+            renderPostData(data[i] , mainArea);
+        }
+        
+
+       
+        
+        
+    }
+
+    
+</script>
+<body>
+    <nav class="navbar bg-body-tertiary nav">
+        <div class="container-fluid">
+          <a class="navbar-brand">Todo App</a>
+          <form class="d-flex search" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    <div id="container">
+        <div class="form-container">
+            <h2>Add Todo</h2>
+            <form onsubmit="onPress(event)">
+                <input type="text" placeholder="Title" id="title">
+                <input type="text" placeholder="Description" id="description">
+                <button >Submit</button>
+            </form>
+        </div>
+        <h2>Todos List</h2>
+        <div id="mainArea"></div>
+    </div>
+</body>
+<script>getData();</script>
+</html>
+
