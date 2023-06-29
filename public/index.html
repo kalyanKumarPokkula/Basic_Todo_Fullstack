@@ -138,6 +138,7 @@
 				body: JSON.stringify({
 					title: title.value,
 					description: description.value,
+					completed: false,
 				}),
 				headers: {
 					'Content-Type': 'application/json',
@@ -163,17 +164,28 @@
 			title.innerText = data.title;
 			titleDiv.appendChild(titleLabel);
 			titleDiv.appendChild(title);
+
 			let descriptionDiv = document.createElement('div');
 			descriptionDiv.className = 'description';
 			let descriptionLabel = document.createElement('label');
 			descriptionLabel.innerText = 'Description :';
 			let description = document.createElement('span');
 			description.innerText = data.description;
-
 			descriptionDiv.appendChild(descriptionLabel);
 			descriptionDiv.appendChild(description);
+
+			let statusDiv = document.createElement('div');
+			statusDiv.className = 'description';
+			let statusLabel = document.createElement('label');
+			statusLabel.innerText = 'Completed :';
+			let status = document.createElement('span');
+			status.innerText = data.completed;
+			statusDiv.appendChild(statusLabel);
+			statusDiv.appendChild(status);
+
 			let button = document.createElement('button');
 			button.innerText = 'delete';
+
 			button.addEventListener('click', function () {
 				console.log('deleted', typeof data.id);
 				deleteData(data.id);
@@ -181,6 +193,7 @@
 
 			div.appendChild(titleDiv);
 			div.appendChild(descriptionDiv);
+			div.appendChild(statusDiv);
 			div.appendChild(button);
 			mainArea.appendChild(div);
 		}
